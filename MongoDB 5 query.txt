@@ -1,0 +1,54 @@
+// Show available databases
+show dbs;
+
+// Switch (or create) a database named 'book'
+use book;
+
+// Show collections in current DB
+show collections;
+
+// Create a collection named 'library'
+db.createCollection("library");
+
+// Insert sample documents
+db.library.insertOne({"bid": 1, "name": "C++"});
+db.library.insertOne({"bid": 2, "name": "SEPM", "author": "Pressman"});
+db.library.insertOne({"bid": 3, "name": "CN", "author": "Forouzan", "cost": 700});
+
+// View all documents in formatted form
+db.library.find().pretty();
+
+// Count total documents
+db.library.countDocuments();
+
+// Insert more records
+db.library.insertMany([
+  {"bid": 4, "name": "SPOS", "author": "Pearson", "cost": 500},
+  {"bid": 5, "name": "TOC", "author": "Addison-Wesley", "cost": 600},
+  {"bid": 6, "name": "AI", "author": "McGraw Hill Education", "cost": 800}
+]);
+
+db.library.find().pretty();
+
+// Remove a document with bid = 1
+db.library.deleteOne({"bid": 1});
+
+db.library.find().pretty();
+
+// Find books with cost = 500 OR cost = 800
+db.library.find({ $or: [ { "cost": 500 }, { "cost": 800 } ] }).pretty();
+
+// Find books with cost NOT equal to 500
+db.library.find({ "cost": { $ne: 500 } }).pretty();
+
+// Find books that have neither cost = 500 nor author = "Forouzan"
+db.library.find({ $nor: [ { "cost": 500 }, { "author": "Forouzan" } ] }).pretty();
+
+// Find books where cost is NOT greater than 800
+db.library.find({ "cost": { $not: { $gt: 800 } } }).pretty();
+
+// Save (upsert-like): replaces if _id exists, else inserts
+db.library.insertOne({"bid": 7, "name": "CC", "author": "Wiley Publications", "cost": 400});
+
+// Show final collection
+db.library.find().pretty();
