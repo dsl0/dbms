@@ -1,0 +1,85 @@
+// Show available databases
+show dbs;
+
+// Switch to (or create) the 'book' database
+use book;
+
+// Show collections in the current database
+show collections;
+
+// Create the 'library' collection
+db.createCollection("library");
+
+// Insert initial documents
+db.library.insertOne({ "bid": 1, "name": "C++" });
+db.library.insertOne({ "bid": 2, "name": "SEPM", "author": "Pressman" });
+db.library.insertOne({ "bid": 3, "name": "CN", "author": "Forouzan", "cost": 700 });
+
+// View all documents in formatted form
+db.library.find().pretty();
+
+// Remove document where bid = 1
+db.library.deleteOne({ "bid": 1 });
+
+// Count total documents in the collection
+db.library.countDocuments();
+
+// View remaining documents
+db.library.find().pretty();
+
+// Reinsert bid = 1
+db.library.insertOne({ "bid": 1, "name": "C++" });
+
+// Show all documents
+db.library.find().pretty();
+
+// Sort documents in ascending order of bid
+db.library.find().sort({ "bid": 1 });
+
+// Insert a new document
+db.library.insertOne({ "bid": 4, "name": "SPOS", "author": "Pearson", "cost": 500 });
+
+// Show all documents
+db.library.find().pretty();
+
+// Sort again by bid
+db.library.find().sort({ "bid": 1 });
+
+// Find document(s) where name = "CN" AND cost = 700
+db.library.find({ $and: [ { "name": "CN" }, { "cost": 700 } ] }).pretty();
+
+// Insert more documents
+db.library.insertMany([
+  { "bid": 5, "name": "TOC", "author": "Addison-Wesley", "cost": 600 },
+  { "bid": 6, "name": "AI", "author": "McGraw Hill Education", "cost": 800 }
+]);
+
+// Display all documents
+db.library.find().pretty();
+
+// Find books with cost = 500 OR cost = 800
+db.library.find({ $or: [ { "cost": 500 }, { "cost": 800 } ] }).pretty();
+
+// Find books with cost NOT equal to 500
+db.library.find({ "cost": { $ne: 500 } }).pretty();
+
+// Find books that have neither cost = 500 nor author = "Forouzan"
+db.library.find({ $nor: [ { "cost": 500 }, { "author": "Forouzan" } ] }).pretty();
+
+// Find books where cost is NOT greater than 800
+db.library.find({ "cost": { $not: { $gt: 800 } } }).pretty();
+
+// Insert a new document
+db.library.insertOne({ "bid": 7, "name": "CC", "author": "Wiley Publications", "cost": 400 });
+
+// Show all documents
+db.library.find().pretty();
+
+// Update cost 400 → 600 (first match only)
+db.library.updateOne({ "cost": 400 }, { $set: { "cost": 600 } });
+
+// Update cost 800 → 1200 (first match only)
+db.library.updateOne({ "cost": 800 }, { $set: { "cost": 1200 } });
+
+// Display final updated documents
+db.library.find().pretty();
