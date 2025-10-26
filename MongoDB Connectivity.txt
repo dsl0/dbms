@@ -1,0 +1,102 @@
+package MongoDB;
+
+import java.util.Scanner;
+import com.mongodb.*;
+
+public class MongoDB {
+    
+    public static void Stringdata(String data, DBCollection table) {
+        DBCursor cursor = table.find();
+        while (cursor.hasNext()) {
+            DBObject obj = cursor.next();
+            Object value = obj.get(data);
+            if (value != null) {
+                if (data.equals("Name"))
+                    System.out.print(data + ": " + value + "\t\t\t");
+                else
+                    System.out.print(data + ": " + value + "\t");
+            }
+        }
+        System.out.println();
+    }
+
+    public static void Intdata(String data, DBCollection table) {
+        DBCursor cursor = table.find();
+        while (cursor.hasNext()) {
+            DBObject obj = cursor.next();
+            Object value = obj.get(data);
+            if (value != null) {
+                System.out.print(data + ": " + value + "\t\t\t\t");
+            }
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) throws Exception {
+        MongoClient mongo = new MongoClient("localhost", 27017);
+        System.out.println("✅ Connected to MongoDB successfully!");
+
+        Scanner sc = new Scanner(System.in);
+        int n, age;
+        String name, mobileno, ans, ans1;
+
+        do {
+            DB db = mongo.getDB("Info");
+            DBCollection table = db.getCollection("Personal");
+
+            System.out.print("Enter number of records to insert: ");
+            n = sc.nextInt();
+
+            for (int i = 1; i <= n; i++) {
+                BasicDBObject info = new BasicDBObject();
+                System.out.println("Enter Data " + i);
+                System.out.print("Enter Name: ");
+                name = sc.next();
+                info.put("Name", name);
+                System.out.print("Enter Age: ");
+                age = sc.nextInt();
+                info.put("Age", age);
+                System.out.print("Enter Mobile Number: ");
+                mobileno = sc.next();
+                info.put("Mobile Number", mobileno);
+                table.insert(info);
+            }
+
+            System.out.println("\n--- After Insert Operation ---");
+            Stringdata("Name", table);
+            Stringdata("Mobile Number", table);
+            Intdata("Age", table);
+
+            System.out.print("\nEnter number of records to delete: ");
+            n = sc.nextInt();
+
+            for (int i = 1; i <= n; i++) {
+                System.out.println("Enter Data " + i);
+                System.out.print("Enter Name to delete: ");
+                name = sc.next();
+                BasicDBObject info = new BasicDBObject("Name", name);
+                table.remove(info);
+            }
+
+            System.out.println("\n--- After Delete Operation ---");
+            Stringdata("Name", table);
+            Stringdata("Mobile Number", table);
+            Intdata("Age", table);
+
+            System.out.print("\nDo you want to drop database? (y/n): ");
+            ans = sc.next();
+            if (ans.equalsIgnoreCase("y")) {
+                mongo.dropDatabase("Info");
+                System.out.println("⚠️ Database dropped!");
+            }
+
+            System.out.print("Do you want to continue? (y/n): ");
+            ans1 = sc.next();
+
+        } while (ans1.equalsIgnoreCase("y"));
+
+        sc.close();
+        mongo.close();
+        System.out.println("👋 Connection closed.");
+    }
+}
